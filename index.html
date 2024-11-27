@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #messages { list-style-type: none; padding: 0; }
+        #messages li { padding: 5px; border-bottom: 1px solid #ddd; }
+        #form { display: flex; margin-top: 10px; }
+        #input { flex: 1; padding: 10px; font-size: 16px; }
+        #send { padding: 10px 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <ul id="messages"></ul>
+    <form id="form">
+        <input id="input" autocomplete="off" placeholder="Type a message..." />
+        <button id="send">Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+
+        // Send message to the server
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', input.value);
+                input.value = '';
+            }
+        });
+
+        // Receive messages and display them
+        socket.on('chat message', (msg) => {
+            const li = document.createElement('li');
+            li.textContent = msg;
+            messages.appendChild(li);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+    </script>
+</body>
+</html>
